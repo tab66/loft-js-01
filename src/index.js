@@ -85,17 +85,15 @@ function isSomeTrue(array, fn) {
 function returnBadArguments(fn) {
     checkFnType(fn);
 
-    const result = [];
-
-    [...arguments].slice(1).forEach(el => {
+    return [...arguments].slice(1).filter(el => {
         try {
             fn(el);
+            
+            return false;
         } catch (err) {
-            result.push(el);
+            return true;
         }
     });
-
-    return result;
 }
 
 /*
