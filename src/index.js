@@ -88,7 +88,7 @@ function returnBadArguments(fn) {
     return [...arguments].slice(1).filter(el => {
         try {
             fn(el);
-            
+
             return false;
         } catch (err) {
             return true;
@@ -120,25 +120,16 @@ function calculator(number = 0) {
     }
 
     return {
-        number,
-        sum: function() {
-            return [...arguments].reduce((acc, el) => acc + el, this.number)
-        },
-        dif: function() {
-            return [...arguments].reduce((acc, el) => acc - el, this.number)
-        },
-        div: function() {
-            return [...arguments].reduce((acc, el) => {
-                if (!el || !acc) {
-                    throw new Error('division by 0');
-                }
+        sum: (...args) => args.reduce((acc, el) => acc + el, number),
+        dif: (...args) => args.reduce((acc, el) => acc - el, number),
+        mul: (...args) => args.reduce((acc, el) => acc * el, number),
+        div: (...args) => args.reduce((acc, el) => {
+            if (!el || !acc) {
+                throw new Error('division by 0');
+            }
 
-                return acc / el
-            }, this ? this.number : 0)
-        },
-        mul: function() {
-            return [...arguments].reduce((acc, el) => acc * el, this.number)
-        },
+            return acc / el
+        }, number)
     }
 }
 
