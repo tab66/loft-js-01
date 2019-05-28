@@ -33,18 +33,13 @@ function isAllTrue(array, fn) {
     checkArray(array);
     checkFnType(fn);
 
-    let result = true;
-
     for (let i = 0; i < array.length; i++) {
-        const check = fn(array[i]);
-
-        if (!check) {
-            result = false;
-            break;
+        if (!fn(array[i])) {
+            return false;
         }
     }
 
-    return result;
+    return true;
 }
 
 /*
@@ -67,18 +62,13 @@ function isSomeTrue(array, fn) {
     checkArray(array);
     checkFnType(fn);
 
-    let result = false;
-
     for (let i = 0; i < array.length; i++) {
-        const check = fn(array[i]);
-
-        if (check) {
-            result = true;
-            break;
+        if (fn(array[i])) {
+            return true;
         }
     }
 
-    return result;
+    return false;
 }
 
 /*
@@ -95,20 +85,15 @@ function isSomeTrue(array, fn) {
 function returnBadArguments(fn) {
     checkFnType(fn);
 
-    const argsList = [...arguments].slice(1);
-
     const result = [];
 
-    for (let i = 0; i < argsList.length; i++) {
-        const item = argsList[i];
-
+    [...arguments].slice(1).forEach(el => {
         try {
-            fn(item);
+            fn(el);
         } catch (err) {
-            result.push(item);
+            result.push(el);
         }
-
-    }
+    });
 
     return result;
 }
@@ -131,46 +116,30 @@ function returnBadArguments(fn) {
    - какой-либо из аргументов div является нулем (с текстом "division by 0")
  */
 
-function calculator() {
-    const number = arguments[0] ? arguments[0] : 0;
-
+function calculator(number = 0) {
     if (isNaN(number)) {
         throw new Error('number is not a number');
     }
 
     return {
         number,
-        reduce: function(args, fn) {
-            let num = this.number;
-            const argsList = [...args];
-
-            for (let i = 0; i < argsList.length; i++) {
-                num = fn(num, argsList[i]);
-            }
-
-            return num;
-        },
         sum: function() {
-            return this.reduce(arguments, (acc, el) => acc + el)
+            return [...arguments].reduce((acc, el) => acc + el, this.number)
         },
         dif: function() {
-            return this.reduce(arguments, (acc, el) => acc - el)
+            return [...arguments].reduce((acc, el) => acc - el, this.number)
         },
         div: function() {
-            if (!this) {
-                throw new Error('division by 0');
-            }
-
-            return this.reduce(arguments, (acc, el) => {
+            return [...arguments].reduce((acc, el) => {
                 if (!el || !acc) {
                     throw new Error('division by 0');
                 }
 
                 return acc / el
-            })
+            }, this ? this.number : 0)
         },
         mul: function() {
-            return this.reduce(arguments, (acc, el) => acc * el)
+            return [...arguments].reduce((acc, el) => acc * el, this.number)
         },
     }
 }
