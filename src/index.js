@@ -71,13 +71,7 @@ function findAllPSiblings(where) {
    findError(document.body) // функция должна вернуть массив с элементами 'привет' и 'loftschool'
  */
 function findError(where) {
-    var result = [];
-
-    for (var child of where.childNodes) {
-        child.innerText && result.push(child.innerText);
-    }
-
-    return result;
+    return [...where.children].map(el => el.innerText);
 }
 
 /*
@@ -163,14 +157,12 @@ function collectDOMStat(root, stats) {
         }
     }
 
-    [...root.childNodes].forEach(child => {
-        const { innerText, tagName, classList, childNodes } = child;
+    [...root.children].forEach(child => {
+        const { innerText, tagName, classList, children } = child;
 
-        if (!innerText) {
-            return;
+        if (innerText) {
+            stats.texts += 1;
         }
-
-        stats.texts += 1;
 
         stats.tags[tagName] = (stats.tags[tagName] || 0) + 1;
 
@@ -178,7 +170,7 @@ function collectDOMStat(root, stats) {
             stats.classes[className] = (stats.classes[className] || 0) + 1;
         });
 
-        if (childNodes.length) {
+        if (children.length) {
             stats = collectDOMStat(child, stats);
         }
     });
