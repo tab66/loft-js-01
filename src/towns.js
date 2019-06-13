@@ -67,6 +67,10 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
 filterInput.addEventListener('keyup', function() {
+    fetchData();
+});
+
+function fetchData() {
     const filterValue = filterInput.value;
 
     filterResult.innerHTML = '';
@@ -96,7 +100,7 @@ filterInput.addEventListener('keyup', function() {
         .finally(() => {
             loadingBlock.style.display = 'none';
         });
-});
+}
 
 function handleError() {
     const fragment = document.createDocumentFragment();
@@ -125,6 +129,8 @@ function handleError() {
     div.appendChild(fragment);
     document.body.appendChild(div);
 }
+
+fetchData();
 
 export {
     loadTowns,
