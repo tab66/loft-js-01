@@ -6,7 +6,7 @@
   "scripts": {
     "codestyle": "eslint src",
     "travis": "npm run codestyle && npm test",
-    "build": "webpack --progress --colors",
+    "build": "webpack --progress",
     "watch": "webpack-dev-server --progress --colors --open",
     "start": "npm run watch",
     "test": "karma start",

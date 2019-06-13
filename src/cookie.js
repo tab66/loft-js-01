@@ -44,87 +44,77 @@ const addButton = homeworkContainer.querySelector('#add-button');
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
 filterNameInput.addEventListener('keyup', function() {
-    const cookiesObj = getCookiesObject(filterNameInput.value);
+    let cookies = getCookies();
 
-    setNewData(cookiesObj);
+    displayNewCookies(cookies);
 });
 
 addButton.addEventListener('click', () => {
     const newName = addNameInput.value;
     const newValue = addValueInput.value;
 
-    const cookiesObj = getCookiesObject();
+    document.cookie = `${newName}=${newValue}`;
 
-    cookiesObj[newName] = newValue;
+    const cookies = getCookies();
 
-    setNewData(cookiesObj);
+    displayNewCookies(cookies);
 });
 
-function getCookiesObject(nameToFilter) {
-    const cookiesObj = {};
-
-    document.cookie.split('; ')
-        .filter(el => el)
-        .forEach(el => {
+function getCookies() {
+    return document.cookie.split('; ')
+        .map(el => {
             const [name, value] = el.split('=');
 
-            if (!nameToFilter || nameToFilter === name) {
-                cookiesObj[name] = value;
+            return { name, value };
+        })
+        .filter(el => {
+            if (filterNameInput.value) {
+                return el.name.includes(filterNameInput.value) || el.value.includes(filterNameInput.value);
             }
-        });
 
-    return cookiesObj;
-}
+            return el.name;
+        });
+};
 
 function deleteCookie(nameToDelete) {
-    const cookies = getCookiesObject();
+    document.cookie = `${nameToDelete}=; Max-Age=0;`;
 
-    setNewData(cookies, nameToDelete);
+    const cookies = getCookies();
+
+    displayNewCookies(cookies);
 }
 
-function setNewData(cookiesObj, nameToDelete) {
+function displayNewCookies(cookiesArr) {
     listTable.innerHTML = '';
 
-    if (!Object.values(cookiesObj).length) {
+    if (!cookiesArr.length) {
         return;
     }
 
-    let cookieString = '';
-
     const allRows = document.createDocumentFragment();
 
-    for (const name in cookiesObj) {
-        const val = cookiesObj[name];
+    cookiesArr.forEach(({ name, value }) => {
+        const row = document.createElement('tr');
+        const rowFragment = document.createDocumentFragment();
+        const nameTD = document.createElement('td');
+        const valueTD = document.createElement('td');
+        const deleteTD = document.createElement('td');
+        const deleteBtn = document.createElement('button');
 
-        cookieString = `${name}=${val};`;
+        nameTD.innerText = name;
+        valueTD.innerText = value;
 
-        if (name !== nameToDelete) {
-            const row = document.createElement('tr');
-            const rowFragment = document.createDocumentFragment();
-            const nameTD = document.createElement('td');
-            const valueTD = document.createElement('td');
-            const deleteTD = document.createElement('td');
-            const deleteBtn = document.createElement('button');
+        deleteBtn.addEventListener('click', () => deleteCookie(name));
 
-            nameTD.innerText = name;
-            valueTD.innerText = val;
+        deleteTD.appendChild(deleteBtn);
 
-            deleteBtn.addEventListener('click', () => deleteCookie(name));
+        rowFragment.appendChild(nameTD);
+        rowFragment.appendChild(valueTD);
+        rowFragment.appendChild(deleteTD);
 
-            deleteTD.appendChild(deleteBtn);
-
-            rowFragment.appendChild(nameTD);
-            rowFragment.appendChild(valueTD);
-            rowFragment.appendChild(deleteTD);
-
-            row.appendChild(rowFragment);
-            allRows.appendChild(row);
-        } else {
-            cookieString = `${cookieString} expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-        }
-    }
+        row.appendChild(rowFragment);
+        allRows.appendChild(row);
+    });
 
     listTable.appendChild(allRows);
-
-    document.cookie = cookieString;
 }

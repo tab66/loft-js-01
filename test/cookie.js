@@ -116,6 +116,7 @@ describe('ДЗ 7.2 - Cookie editor', () => {
             addButton.click();
 
             rows = [...listTable.children];
+
             changedRow = rows.filter(row => row.children[1].textContent.trim() == 'other-test-cookie-value-2');
             assert.equal(changedRow.length, 1, 'новое значение для cookie не найдено в таблице');
         });
@@ -136,6 +137,7 @@ describe('ДЗ 7.2 - Cookie editor', () => {
 
             deleteButton.click();
             cookies = getCookies();
+            
             assert.equal(Object.keys(cookies).length, 1, 'cookie не удалена из браузера');
             assert.equal(listTable.children.length, 1, 'cookie не удалена из таблицы');
 
