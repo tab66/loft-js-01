@@ -1,9 +1,10 @@
 const HtmlPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const rules = require('./webpack.config.rules');
 const fs = require('fs');
 const path = require('path');
+const ExtractTextPlugin = require('mini-css-extract-plugin');
 
 const root = path.resolve('src');
 const files = fs.readdirSync(root)
@@ -45,30 +46,35 @@ if (!html.length || !files['.hbs'].find(file => file.name === 'index')) {
 }
 
 module.exports = {
-    entry: entries,
+    entry: {
+        // main: './src/index.js',
+        dnd: './src/cookie.js'
+    },
+    devServer: {
+        index: './src/cookie.html'
+    },
     output: {
         filename: '[name].[hash].js',
         path: path.resolve('dist')
     },
-    mode: 'development',
     devtool: 'source-map',
     module: {
-        rules: [
-            ...rules,
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
-            }
-        ]
+        rules
     },
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: '[name].css',
+
+        new ExtractTextPlugin('styles.css'),
+        new HtmlPlugin({
+            title: 'Main Homework',
+            template: 'index.hbs',
+            chunks: ['index']
         }),
-        ...html,
+        new HtmlPlugin({
+            title: 'Div Drag And Drop',
+            template: './src/cookie.hbs',
+            filename: './src/cookie.html',
+            chunks: ['dnd']
+        }),
         new CleanWebpackPlugin(['dist'])
     ]
 };
